@@ -9,7 +9,8 @@ export default async function EditionsPage() {
     try {
         const service = new EditionsService(serverAuthProvider);
         editions = await service.getEditions();
-    } catch {
+    } catch (e) {
+        console.error("Failed to fetch editions:", e);
         error = "Failed to load editions.";
     }
 
@@ -28,9 +29,9 @@ export default async function EditionsPage() {
                     )}
 
                     <ul className="space-y-3 w-full">
-                        {editions.map((edition) => (
+                        {editions.map((edition, index) => (
                             <li
-                                key={edition.uri ?? String(edition.year)}
+                                key={edition.uri ?? index}
                                 className="p-4 w-full border rounded-lg bg-white shadow-sm hover:shadow transition dark:bg-black"
                             >
                                 <span className="font-medium">{edition.year}</span>

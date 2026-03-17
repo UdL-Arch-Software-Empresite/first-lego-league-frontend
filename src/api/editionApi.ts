@@ -6,7 +6,7 @@ export class EditionsService {
     constructor(private readonly authStrategy: AuthStrategy) {}
 
     async getEditions(): Promise<Edition[]> {
-        const resource = await getHal("/editions", this.authStrategy);
+        const resource = await getHal('/editions', this.authStrategy);
         const embedded = resource.embeddedArray("editions") || [];
         return mergeHalArray<Edition>(embedded);
     }
