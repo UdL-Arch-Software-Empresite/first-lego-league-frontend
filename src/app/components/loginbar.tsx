@@ -51,11 +51,17 @@ export default function Loginbar() {
                             <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
                         </AvatarFallback>
                     </Avatar>
-                    <Link href={`/users/${user.username}`} className="min-w-0">
-                        <span className="block truncate text-sm font-medium text-foreground">
-                            {user.username ?? "User"}
+                    {user.username ? (
+                        <Link href={`/users/${user.username}`} className="min-w-0">
+                            <span className="block truncate text-sm font-medium text-foreground">
+                                {user.username}
+                            </span>
+                        </Link>
+                    ) : (
+                        <span className="block min-w-0 truncate text-sm font-medium text-foreground">
+                            User
                         </span>
-                    </Link>
+                    )}
                 </div>
                 <button
                     onClick={logout}
