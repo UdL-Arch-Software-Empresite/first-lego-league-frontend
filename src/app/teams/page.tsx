@@ -3,7 +3,7 @@ import EmptyState from "@/app/components/empty-state";
 import ErrorAlert from "@/app/components/error-alert";
 import PageShell from "@/app/components/page-shell";
 import { serverAuthProvider } from "@/lib/authProvider";
-import { parseErrorMessage } from "@/types/errors";
+import { ApiError, parseErrorMessage } from "@/types/errors";
 import { Team } from "@/types/team";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,19 @@ function getTeamDisplayName(team: Team) {
 }
 
 function getTeamKey(team: Team, index: number) {
-    return team.uri ?? team.id ?? team.name ?? `team-${index}`;
+    return team.uri ?? team.id ?? `team-${index}`;
+}
+
+function getTeamErrorMessage(error: unknown) {
+    if (error instanceof ApiError) {
+        return parseErrorMessage(error);
+    }
+
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    return parseErrorMessage(error);
 }
 
 function TeamCard({ team }: Readonly<{ team: Team }>) {
@@ -55,7 +67,7 @@ export default async function TeamsPage() {
         teams = await service.getTeams();
     } catch (e) {
         console.error("Failed to fetch teams:", e);
-        error = parseErrorMessage(e);
+        error = getTeamErrorMessage(e);
     }
 
     return (
@@ -69,7 +81,7 @@ export default async function TeamsPage() {
                     <div className="page-eyebrow">Registered teams</div>
                     <h2 className="section-title">Competition roster</h2>
                     <p className="section-copy max-w-3xl">
-                        Explore the teams in the system, including their city, category and season metadata.
+                        Explore the teams in the system, including their city, category and registration metadata.
                     </p>
                 </div>
 
