@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle } from "@/app/components/card";
 import PageShell from "@/app/components/page-shell";
 import ErrorAlert from "@/app/components/error-alert";
 import EmptyState from "@/app/components/empty-state";
+import EditProfileForm from "@/app/components/edit-profile-form";
 import { serverAuthProvider } from "@/lib/authProvider";
 import { Record } from "@/types/record";
 import { parseErrorMessage, NotFoundError } from "@/types/errors";
@@ -27,6 +28,7 @@ export default async function UsersPage(props: Readonly<UsersPageProps>) {
     const recordService = new RecordService(serverAuthProvider);
     
     let user: User | null = null;
+    let currentUser: User | null = null;
     let records: Record[] = [];
     let error: string | null = null;
     let recordsError: string | null = null;
@@ -39,6 +41,14 @@ export default async function UsersPage(props: Readonly<UsersPageProps>) {
             ? "This user does not exist." 
             : parseErrorMessage(e);
     }
+
+    try {
+        currentUser = await userService.getCurrentUser();
+    } catch (e) {
+        console.error("Failed to fetch current user:", e);
+    }
+
+    const isOwner = !!(currentUser && user && currentUser.username === user.username);
 
     if (user && !error) {
         try {
@@ -79,6 +89,16 @@ export default async function UsersPage(props: Readonly<UsersPageProps>) {
                 </div>
 
                 <div className="editorial-divider" />
+
+                {isOwner && user && (
+                    <>
+                        <EditProfileForm
+                            userId={(await props.params).id}
+                            currentEmail={user.email}
+                        />
+                        <div className="editorial-divider" />
+                    </>
+                )}
 
                 <div className="space-y-4">
                     <div className="page-eyebrow">Records</div>

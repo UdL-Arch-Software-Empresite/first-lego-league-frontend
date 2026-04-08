@@ -201,7 +201,7 @@ async function handleApiError(error: unknown, res?: Response): Promise<never> {
  * @returns Resource or null for 204 responses
  */
 async function executeHalRequest(config: {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     path: string;
     authProvider: { getAuth: () => Promise<string | null> };
     body?: Resource;
@@ -284,6 +284,15 @@ export async function deleteHal(path: string, authProvider: { getAuth: () => Pro
 export async function postHal(path: string, body: Resource, authProvider: { getAuth: () => Promise<string | null> }): Promise<Resource | null> {
     return await executeHalRequest({ 
         method: 'POST', 
+        path, 
+        authProvider, 
+        body 
+    });
+}
+
+export async function patchHal(path: string, body: Resource, authProvider: { getAuth: () => Promise<string | null> }): Promise<Resource | null> {
+    return await executeHalRequest({ 
+        method: 'PATCH', 
         path, 
         authProvider, 
         body 
