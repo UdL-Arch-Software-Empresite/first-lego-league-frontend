@@ -1,6 +1,6 @@
 import type { AuthStrategy } from "@/lib/authProvider";
 import { User } from "@/types/user";
-import { fetchHalCollection, fetchHalResource, createHalResource, patchHal, mergeHal } from "./halClient";
+import { fetchHalCollection, fetchHalResource, createHalResource, patchHal, mergeHal, deleteHal } from "./halClient";
 import { Resource } from "halfred";
 import { ApiError } from "@/types/errors";
 
@@ -47,5 +47,10 @@ export class UsersService {
             throw new ApiError('No response from server after update', 500, true);
         }
         return mergeHal<User>(resource);
+    }
+
+    async deleteUser(id: string): Promise<void> {
+        const userId = encodeURIComponent(id);
+        await deleteHal(`/users/${userId}`, this.authStrategy);
     }
 }

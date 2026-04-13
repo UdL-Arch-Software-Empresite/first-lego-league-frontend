@@ -2,10 +2,10 @@ import { UsersService } from "@/api/userApi";
 import PageShell from "@/app/components/page-shell";
 import ErrorAlert from "@/app/components/error-alert";
 import EmptyState from "@/app/components/empty-state";
+import AdministratorList from "./administrator-list";
 import { serverAuthProvider } from "@/lib/authProvider";
 import { User } from "@/types/user";
 import { parseErrorMessage } from "@/types/errors";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 function isAdmin(user: User | null) {
@@ -75,35 +75,11 @@ export default async function AdministratorsPage() {
                     />
                 )}
 
-                {!error && administrators.length > 0 && (
-                    <ul className="list-grid">
-                        {administrators.map((administrator) => (
-                            <li key={administrator.username} className="list-card pl-7">
-                                <div className="list-kicker">Administrator</div>
-                                <Link
-                                    className="list-title block hover:text-primary"
-                                    href={`/users/${administrator.username}`}
-                                >
-                                    {administrator.username}
-                                </Link>
-
-                                {administrator.email && (
-                                    <div className="list-support">{administrator.email}</div>
-                                )}
-
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {administrator.authorities?.map((authority) => (
-                                        <span
-                                            key={`${administrator.username}-${authority.authority}`}
-                                            className="status-badge"
-                                        >
-                                            {authority.authority}
-                                        </span>
-                                    ))}
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                {!error && administrators.length > 0 && currentUser && (
+                    <AdministratorList
+                        administrators={administrators}
+                        currentUsername={currentUser.username}
+                    />
                 )}
             </div>
         </PageShell>
