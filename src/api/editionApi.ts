@@ -1,7 +1,13 @@
 import type { AuthStrategy } from "@/lib/authProvider";
 import { Edition } from "@/types/edition";
 import { Team } from "@/types/team";
-import { fetchHalCollection, fetchHalResource } from "./halClient";
+import { createHalResource, fetchHalCollection, fetchHalResource } from "./halClient";
+
+export type CreateEditionPayload = {
+    year: number;
+    venueName: string;
+    description: string;
+};
 
 export class EditionsService {
     constructor(private readonly authStrategy: AuthStrategy) {}
@@ -18,5 +24,9 @@ export class EditionsService {
     async getEditionTeams(id: string): Promise<Team[]> {
         const editionId = encodeURIComponent(id);
         return fetchHalCollection<Team>(`/editions/${editionId}/teams`, this.authStrategy, 'teams');
+    }
+
+    async createEdition(data: CreateEditionPayload): Promise<Edition> {
+        return createHalResource<Edition>("/editions", data, this.authStrategy, "edition");
     }
 }
