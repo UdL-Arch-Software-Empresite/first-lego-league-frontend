@@ -1,77 +1,42 @@
-import type { AuthStrategy } from "@/lib/authProvider";
+import { getHal, deleteHal } from "@/lib/api-utils";
+import { AuthStrategy } from "@/lib/authProvider";
 import { Team } from "@/types/team";
 import { User } from "@/types/user";
-import {
-    fetchHalCollection,
-    fetchHalResource,
-    createHalResource,
-    deleteHal
-} from "./halClient";
-
 
 function getSafeEncodedId(id: string): string {
-    try {
-        // HAL links may already contain encoded ids, so normalize before reusing them.
-        return encodeURIComponent(decodeURIComponent(id));
-    } catch {
-        return encodeURIComponent(id);
-    }
-}
-
-export interface AddMemberPayload {
-    name: string;
-    role: string;
+    return encodeURIComponent(id);
 }
 
 export class TeamsService {
     constructor(private readonly authStrategy: AuthStrategy) {}
 
     async getTeams(): Promise<Team[]> {
-        return fetchHalCollection<Team>("/teams", this.authStrategy, "teams");
+        const data = await getHal("/teams", this.authStrategy);
+        return data?._embedded?.teams ?? [];
     }
 
     async getTeamById(id: string): Promise<Team> {
         const teamId = getSafeEncodedId(id);
-        return fetchHalResource<Team>(`/teams/${teamId}`, this.authStrategy);
+        return getHal(`/teams/${teamId}`, this.authStrategy);
     }
 
     async getTeamCoach(id: string): Promise<User[]> {
         const teamId = getSafeEncodedId(id);
-        return fetchHalCollection<User>(`/teams/${teamId}/trainedBy`, this.authStrategy, "coaches");
+        const data = await getHal(`/teams/${teamId}/coaches`, this.authStrategy);
+        return data?._embedded?.users ?? [];
     }
 
-    async getTeamMembers(teamId: string): Promise<any[]> {
-        const safeId = getSafeEncodedId(teamId);
-        return fetchHalCollection<any>(
-            `/teams/${safeId}/members`,
-            this.authStrategy,
-            "teamMembers"
-        );
+    async getTeamMembers(id: string): Promise<any> {
+        const teamId = getSafeEncodedId(id);
+        return getHal(`/teams/${teamId}/teamMembers`, this.authStrategy);
     }
 
-    async addTeamMember(teamId: string, data: AddMemberPayload): Promise<any> {
-        const safeId = getSafeEncodedId(teamId);
-        return createHalResource<any>(
-            "/teamMembers",
-            {
-                name: data.name.trim(),
-                role: data.role,
-                birthDate: "2010-01-01",
-                gender: "MALE",
-                tShirtSize: "M",
-                team: `/teams/${safeId}`
-            },
-            this.authStrategy,
-            "team member"
-        );
-    }
-
-    async removeTeamMember(memberUri: string): Promise<void> {
-        await deleteHal(memberUri, this.authStrategy);
-    }
-}
     async deleteTeam(id: string): Promise<void> {
         const teamId = getSafeEncodedId(id);
         await deleteHal(`/teams/${teamId}`, this.authStrategy);
+    }
+
+    async removeTeamMember(uri: string): Promise<void> {
+        await deleteHal(uri, this.authStrategy);
     }
 }
