@@ -20,6 +20,8 @@ export class TeamsService {
 
     async getTeamsByEdition(editionUri: string): Promise<Team[]> {
         return fetchHalCollection<Team>(editionUri, this.authStrategy, 'teams');
+    }
+
     async getTeamById(id: string): Promise<Team> {
         const teamId = getSafeEncodedId(id);
         return fetchHalResource<Team>(`/teams/${teamId}`, this.authStrategy);
