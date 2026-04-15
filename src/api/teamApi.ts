@@ -1,5 +1,5 @@
 import type { AuthStrategy } from "@/lib/authProvider";
-import { Team } from "@/types/team";
+import { Team, AVAILABLE_MEMBER_ROLES } from "@/types/team";
 import { User } from "@/types/user";
 import {
     fetchHalCollection,
@@ -25,49 +25,31 @@ export class TeamsService {
     constructor(private readonly authStrategy: AuthStrategy) {}
 
     async getTeams(): Promise<Team[]> {
-        return fetchHalCollection<Team>(
-            "/teams",
-            this.authStrategy,
-            "teams"
-        );
+        return fetchHalCollection<Team>("/teams", this.authStrategy, "teams");
     }
 
     async getTeamById(id: string): Promise<Team> {
         const teamId = getSafeEncodedId(id);
-
-        return fetchHalResource<Team>(
-            `/teams/${teamId}`,
-            this.authStrategy
-        );
+        return fetchHalResource<Team>(`/teams/${teamId}`, this.authStrategy);
     }
 
     async getTeamCoach(id: string): Promise<User[]> {
         const teamId = getSafeEncodedId(id);
-
-        return fetchHalCollection<User>(
-            `/teams/${teamId}/trainedBy`,
-            this.authStrategy,
-            "coaches"
-        );
+        return fetchHalCollection<User>(`/teams/${teamId}/trainedBy`, this.authStrategy, "coaches");
     }
 
+    // EL CAMBIO CLAVE: Ruta directa a members
     async getTeamMembers(teamId: string): Promise<any[]> {
         const safeId = getSafeEncodedId(teamId);
-
-        const members = await fetchHalCollection<any>(
-            `/teamMembers?page=0&size=50`,
+        return fetchHalCollection<any>(
+            `/teams/${safeId}/members`,
             this.authStrategy,
             "teamMembers"
-        );
-
-        return members.filter(m =>
-            m.team?._links?.self?.href === `/teams/${safeId}`
         );
     }
 
     async addTeamMember(teamId: string, data: AddMemberPayload): Promise<any> {
         const safeId = getSafeEncodedId(teamId);
-
         return createHalResource<any>(
             "/teamMembers",
             {

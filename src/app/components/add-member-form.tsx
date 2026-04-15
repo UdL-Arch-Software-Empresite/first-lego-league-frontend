@@ -4,13 +4,18 @@ import { useState } from 'react';
 import { Button } from '@/app/components/button';
 import { AVAILABLE_MEMBER_ROLES } from '@/types/team';
 
-type AddMemberFormProps = {
+type AddMemberFormProps = Readonly<{
     onSubmit: (name: string, role: string) => Promise<boolean> | void;
     onCancel: () => void;
     isLoading?: boolean;
-};
+}>;
 
-export function AddMemberForm({ onSubmit, onCancel, isLoading = false }: AddMemberFormProps) {
+export function AddMemberForm({
+    onSubmit,
+    onCancel,
+    isLoading = false
+}: AddMemberFormProps) {
+
     const [name, setName] = useState('');
     const [role, setRole] = useState(AVAILABLE_MEMBER_ROLES[0]);
 

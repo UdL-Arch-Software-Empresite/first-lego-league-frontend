@@ -12,7 +12,6 @@ export function TeamMembersManager({
     isCoach,
     isAdmin
 }: any) {
-
     const isAuthorized = isCoach || isAdmin;
 
     const {
@@ -25,15 +24,12 @@ export function TeamMembersManager({
     const [showForm, setShowForm] = useState(false);
     const [selected, setSelected] = useState<any>(null);
 
-    // 🔥 seguridad extra: evita null/undefined/arrays rotos
     const safeMembers = (members ?? []).filter(
         (m: any) => m && typeof m === 'object'
     );
 
     return (
         <div className="space-y-4">
-
-            {/* ADD MEMBER */}
             {isAuthorized && !isFull && (
                 <Button
                     onClick={() => setShowForm(true)}
@@ -49,7 +45,6 @@ export function TeamMembersManager({
                 </p>
             )}
 
-            {/* FORM */}
             {showForm && (
                 <AddMemberForm
                     onSubmit={async (name, role) => {
@@ -60,8 +55,7 @@ export function TeamMembersManager({
                 />
             )}
 
-            {/* LIST */}
-            <ul>
+            <ul className="space-y-2">
                 {safeMembers.map((m: any, index: number) => (
                     <li
                         key={
@@ -70,14 +64,18 @@ export function TeamMembersManager({
                             m?.id ||
                             `${m?.name ?? 'member'}-${index}`
                         }
-                        className="flex justify-between border p-2 rounded"
+                        className="flex items-center justify-between border p-3 rounded-lg bg-white shadow-sm dark:bg-zinc-900"
                     >
-                        <span>
+                        <span className="font-medium">
                             {m.name ?? "Unnamed member"}
                         </span>
 
                         {isAuthorized && (
-                            <Button onClick={() => setSelected(m)}>
+                            <Button 
+                                variant="destructive" 
+                                size="sm" 
+                                onClick={() => setSelected(m)}
+                            >
                                 Delete
                             </Button>
                         )}
@@ -85,14 +83,14 @@ export function TeamMembersManager({
                 ))}
             </ul>
 
-            {/* DELETE DIALOG */}
             <DeleteMemberDialog
                 isOpen={!!selected}
                 onCancel={() => setSelected(null)}
                 onConfirm={async () => {
-                    if (!selected?._links?.self?.href) return;
+                    const deleteUrl = selected?._links?.self?.href || selected?.uri;
+                    if (!deleteUrl) return;
 
-                    await removeMember(selected._links.self.href);
+                    await removeMember(deleteUrl);
                     setSelected(null);
                 }}
             />

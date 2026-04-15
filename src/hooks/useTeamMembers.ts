@@ -1,15 +1,19 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { TeamsService } from '@/api/teamApi';
 import { clientAuthProvider } from '@/lib/authProvider';
 import { User } from '@/types/user';
 import { MAX_TEAM_MEMBERS } from '@/types/team';
 
-export function useTeamMembers(teamId: string, initialMembers?: User[]) {
-    const [members, setMembers] = useState<User[]>(initialMembers ?? []);
+export function useTeamMembers(teamId: string, initialMembers: User[] = []) {
+    const [members, setMembers] = useState<User[]>(initialMembers);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        setMembers(initialMembers);
+    }, [initialMembers]);
 
     const service = useMemo(
         () => new TeamsService(clientAuthProvider),
@@ -38,7 +42,6 @@ export function useTeamMembers(teamId: string, initialMembers?: User[]) {
                 });
 
                 setMembers(prev => [...prev, newMember]);
-
                 return true;
             } catch (e) {
                 setError('Failed to add member');
@@ -62,11 +65,11 @@ export function useTeamMembers(teamId: string, initialMembers?: User[]) {
 
             try {
                 await service.removeTeamMember(memberUri);
-
                 setMembers(prev =>
-                    prev.filter(
-                        m => m._links?.self?.href !== memberUri
-                    )
+                    prev.filter(m => {
+                        const href = m._links?.self?.href || (m as any).uri;
+                        return href !== memberUri;
+                    })
                 );
             } catch {
                 setError('Failed to remove member');
@@ -83,6 +86,6 @@ export function useTeamMembers(teamId: string, initialMembers?: User[]) {
         error,
         addMember,
         removeMember,
-        isFull: members.length >= MAX_TEAM_MEMBERS,
+        isFull: (members ?? []).length >= MAX_TEAM_MEMBERS,
     };
 }
