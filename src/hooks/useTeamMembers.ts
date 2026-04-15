@@ -67,7 +67,7 @@ export function useTeamMembers(teamId: string, initialMembers: User[] = []) {
                 await service.removeTeamMember(memberUri);
                 setMembers(prev =>
                     prev.filter(m => {
-                        const memberData = m as any;
+                        const memberData = m as unknown;
                         const href = memberData._links?.self?.href || memberData.uri;
                         return href !== memberUri;
                     })

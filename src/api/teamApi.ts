@@ -38,18 +38,18 @@ export class TeamsService {
         return fetchHalCollection<User>(`/teams/${teamId}/trainedBy`, this.authStrategy, "coaches");
     }
 
-    async getTeamMembers(teamId: string): Promise<any[]> {
+    async getTeamMembers(teamId: string): Promise<unknown[]> {
         const safeId = getSafeEncodedId(teamId);
-        return fetchHalCollection<any>(
+        return fetchHalCollection<unknown>(
             `/teams/${safeId}/members`,
             this.authStrategy,
             "teamMembers"
         );
     }
 
-    async addTeamMember(teamId: string, data: AddMemberPayload): Promise<any> {
+    async addTeamMember(teamId: string, data: AddMemberPayload): Promise<unknown> {
         const safeId = getSafeEncodedId(teamId);
-        return createHalResource<any>(
+        return createHalResource<unknown>(
             "/teamMembers",
             {
                 name: data.name.trim(),

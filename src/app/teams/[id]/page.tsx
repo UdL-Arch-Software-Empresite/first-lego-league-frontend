@@ -12,10 +12,10 @@ interface TeamDetailPageProps {
     readonly params: Promise<{ id: string }>;
 }
 
-function extractTeamMembers(data: any): any[] {
+function extractTeamMembers(data: unknown): unknown[] {
     const rawMembers = Array.isArray(data) ? data : (data?._embedded?.teamMembers ?? []);
 
-    return rawMembers.map((m: any, index: number) => {
+    return rawMembers.map((m: unknown, index: number) => {
         const extractedId = m._links?.self?.href?.split('/').pop() || m.uri?.split('/').pop();
 
         return {
@@ -36,7 +36,7 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
     let currentUser: User | null = null;
     let team: Team | null = null;
     let coaches: User[] = [];
-    let members: any[] = [];
+    let members: unknown[] = [];
     let error: string | null = null;
     let membersError: string | null = null;
 

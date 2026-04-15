@@ -6,11 +6,11 @@ import { AddMemberForm } from './add-member-form';
 import { DeleteMemberDialog } from './delete-member-dialog';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
 
-export function TeamMembersManager({ teamId, initialMembers, isCoach, isAdmin }: any) {
+export function TeamMembersManager({ teamId, initialMembers, isCoach, isAdmin }: unknown) {
     const isAuthorized = isCoach || isAdmin;
     const { members, addMember, removeMember, isFull } = useTeamMembers(teamId, initialMembers);
     const [showForm, setShowForm] = useState(false);
-    const [selected, setSelected] = useState<any>(null);
+    const [selected, setSelected] = useState<unknown>(null);
 
     return (
         <div className="space-y-4">
@@ -30,7 +30,7 @@ export function TeamMembersManager({ teamId, initialMembers, isCoach, isAdmin }:
             )}
 
             <ul className="space-y-2">
-                {members.map((m: any) => (
+                {members.map((m: unknown) => (
                     <li key={m.uri || m.id} className="flex items-center justify-between border p-3 rounded-lg bg-white">
                         <div>
                             <span className="font-medium block">{m.name}</span>
