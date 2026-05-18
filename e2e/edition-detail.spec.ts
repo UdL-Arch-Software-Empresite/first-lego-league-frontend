@@ -27,6 +27,28 @@ test("edition detail page renders metadata when the edition exists", async ({ pa
     ).toBeVisible();
 });
 
+test("edition detail page links to competition tables", async ({ page }) => {
+    await page.goto("/editions");
+
+    const firstEditionLink = page.locator('.editions-page-grid a[href^="/editions/"]').first();
+    const emptyState = page.getByText("No editions found");
+
+    await expect(emptyState.or(firstEditionLink)).toBeVisible();
+
+    if (await emptyState.isVisible()) {
+        return;
+    }
+
+    await firstEditionLink.click();
+
+    const competitionTablesLink = page.getByRole("link", { name: "Competition Tables" });
+    await expect(competitionTablesLink).toBeVisible();
+
+    await competitionTablesLink.click();
+
+    await expect(page).toHaveURL(/\/editions\/.+\/competition-tables$/);
+});
+
 test("edition detail page shows a not-found message when the edition does not exist", async ({ page }) => {
     await page.goto("/editions/999999999");
 

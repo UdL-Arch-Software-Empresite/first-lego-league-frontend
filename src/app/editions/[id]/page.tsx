@@ -278,6 +278,15 @@ export default async function EditionDetailPage(props: Readonly<EditionDetailPag
                         </div>
 
                         <div className="mb-3">
+                            <Link
+                                href={`/editions/${id}/competition-tables`}
+                                className={buttonVariants({ variant: "secondary", size: "sm" })}
+                            >
+                                Competition Tables
+                            </Link>
+                        </div>
+
+                        <div className="mb-3">
                             <FavoriteActionButton
                                 type="edition"
                                 id={String(id)}
