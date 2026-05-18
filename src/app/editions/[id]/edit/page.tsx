@@ -51,7 +51,7 @@ export default async function EditEditionPage(props: Readonly<EditEditionPagePro
     }
 
     if (currentUser && !isAdmin(currentUser)) {
-        redirect("/");
+        redirect(`/editions/${id}`);
     }
 
     if (!error) {
